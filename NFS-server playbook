@@ -1,0 +1,31 @@
+#####NFS SERVER PLAYBOOK######
+---
+- hosts: kawkab
+  tasks:
+  - name: Disabling selinux
+    shell: "setenforce 0"
+  - name: Stopping and disablling iptables
+    service:
+      name: iptables
+      state: stopped
+      enabled: no
+  - name: Installing NFS-UTILS
+    yum:
+      name: nfs-utils
+      state: present
+  - name: Starting and Enabling NFS
+    service:
+      name: nfs
+      state: started
+      enabled: yes
+  - name: Creating NFS shared directory
+    file:
+      path: /data
+      state: directory
+  - name: Creating Shares
+    lineinfile:
+      path: /etc/exports
+      line: '/data *(rw,no_root_squash,sync)'
+  - name: Exporting Shares
+    shell: "exportfs -avr; showmount -e kawkab"
+
