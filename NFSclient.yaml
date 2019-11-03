@@ -1,0 +1,22 @@
+#####This NFS Client Playbook######
+---
+- hosts: kawkab
+  tasks:
+  - name: Disabling SElinux
+    shell: "setenforce 0"
+  - name: Stopping and Disabling IPtables
+    service:
+      name: iptables
+      state: stopped
+      enabled: no
+  - name: Installing client RPMs
+    yum:
+      name: nfs-utils
+      state: present
+  - name: Mounting NfS persistently
+    mount:
+      path: /tmp
+      src: kawkab:/data
+      fstype: nfs
+      state: mounted
+
