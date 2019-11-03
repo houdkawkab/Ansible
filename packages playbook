@@ -1,0 +1,33 @@
+# Ansible
+Playbooks
+---
+- name: Deploy and start services
+  hosts: kawkab
+  vars:
+    web_pkg: httpd
+    ntpd_pkg: ntp
+    ftp_pkg: vsftpd
+    mysql_pkg: mysql
+    web_service: httpd
+    ntpd_service: ntpd
+    ftp_service: vsftpd
+    mysql_service: mysql
+  tasks:
+  - name: Required packages are installed and up to date
+    yum:
+      name:
+          - "{{ web_pkg }}"
+          - "{{ ntpd_pkg }}"
+          - "{{ ftp_pkg }}"
+          - "{{ mysql_pkg }}"
+      state: latest
+  - name: All the services are started and enabled
+    service:
+      name:
+          - "{{ web_service }}"
+          - "{{ ntpd_pkg }}"
+          - "{{ ftp_service }}"
+          - "{{ mysql_service }}"
+      enabled: yes
+      state: started
+by houd kawkab
