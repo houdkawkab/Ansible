@@ -1,0 +1,48 @@
+---
+- name: configuring kickstart file
+  hosts: testing
+  tasks:
+  - name: copying the anaconda file under the ftp directory and renaming it
+    copy:
+      src: /root/anaconda-ks.cfg
+      dest: /var/ftp/pub/ks.cfg
+  - name: Replacing the cdrom with the url that contains cd content
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^cdrom'
+      line: url --url=ftp://192.168.1.84/pub/
+  - name: Uncommenting the /boot partition
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^#part /boot --fstype=ext4 --size=500'
+      line: part /boot --fstype=ext4 --size=500
+  - name: uncommenting and changing the size of /var
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^#part /var --fstype=ext4 --size=4000'
+      line: part /var --fstype=ext4 --size=5000
+  - name: Uncommenting the swap
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^#part swap --size=4000'
+      line: part swap --size=4000
+  - name: Uncommenting the home partition
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^#part /home --fstype=ext4 --size=2000'
+      line: part /home --fstype=ext4 --size=2000
+  - name: Uncommenting the last thing i promise lol
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^#part / --fstype=ext4 --grow --size=200'
+      line: part / --fstype=ext4 --grow --size=200
+  - name: Changing the baseurl for repo
+    lineinfile:
+      path: /var/ftp/pub/ks.cfg
+      regexp: '^repo --name="CentOS"  --baseurl=cdrom:sr0 --cost=100'
+      line: repo --name="CentOS"  --baseurl=ftp://192.168.1.84/pub/ --cost=100
+  - name: Changing the permission of the file so it can be executable
+    file:
+      path: /var/ftp/pub/ks.cfg
+      state: file
+      mode: '0755'
