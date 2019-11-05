@@ -1,0 +1,58 @@
+---
+- name: http yum repository
+  hosts: testing
+  tasks:
+  - name: mounting dvd to /mnt
+    mount:      
+      path: /mnt
+      src: /dev/sr0
+      fstype: iso9660
+      state: mounted
+  - name: Installing httpd and createrepo
+    yum:
+      name: 
+       - httpd
+       - createrepo
+      state: present
+  - name: starting httpd service
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+  - name: creating a directory under /var/www/html
+    file:
+      path: /var/www/html/my-repo
+      state: directory
+  - name: copying rpms from mounted dvd to /var/www/html/my-repo
+    shell: cp -ar /mnt/Packages/* /var/www/html/my-repo/
+  - name: creating meta data
+    shell: createrepo /var/www/html/my-repo/
+  - name: creating a backup directory under /etc/yum.repos.d
+    file:
+      path: /etc/yum.repos.d/backup
+      state: directory
+  - name: moving the repo files under backup
+    shell: mv /etc/yum.repos.d/CentOS-* /etc/yum.repos.d/backup
+  - name: creating a file and adding the baseurl,name, e.t.c
+    blockinfile:
+      path: /etc/yum.repos.d/my-repo.repo
+      block: |
+            [my-repo]
+            name="my local repo"
+            baseurl=http://192.168.1.84/my-repo
+            enabled=1
+            gpgcheck=0
+      create: yes
+  - name: yum cleaning
+    shell: yum clean all
+  - name: stpopping iptables
+    service:
+      name: iptables
+      state: stopped
+      enabled: no
+  - name: changing the selinux mode
+    selinux:
+      policy: targeted
+      state: permissive 
+   
+  
