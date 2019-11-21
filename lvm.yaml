@@ -2,22 +2,29 @@
 - name: configuring partitions with lvm
   hosts: testing
   tasks:
+  - name: Create a new primary partition for LVM
+    parted:
+      device: /dev/sdc
+      number: 1
+      flags: [ lvm ]
+      state: present
+      part_start: 1GiB
   - name: creating volume group
     lvg:
-      vg: vg1
-      pvs: /dev/sdb1, /dev/sdb2
+      vg: vg11
+      pvs: /dev/sdc1
   - name: creating logical volume
     lvol:
-      vg: vg1
-      lv: lv1
-      size: 1G
+      vg: vg11
+      lv: lv11
+      size: 500M
   - name: making filesystem
     filesystem:
       fstype: ext4
-      dev: /dev/vg1/lv1
+      dev: /dev/vg11/lv11
   - name: mounting
     mount: 
-      name: /lvmount
-      src: /dev/vg1/lv1
+      name: /lvmount11
+      src: /dev/vg11/lv11
       fstype: ext4
       state: mounted
