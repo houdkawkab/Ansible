@@ -1,0 +1,19 @@
+---
+- hosts: testing
+  tasks:
+  - name: creating partitions in /dev/sdb
+    parted:
+      device: /dev/sdb
+      number: 1
+      state: present
+      part_end: 2.5GiB
+  - name: make a filesystem
+    filesystem:
+      dev: /dev/sdb
+      fstype: ext4
+  - name: mounting /dev/sdb to /data1
+    mount:
+      src: /dev/sdb
+      path: /data1
+      state: mounted
+      fstype: ext4
