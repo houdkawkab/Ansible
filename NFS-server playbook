@@ -28,4 +28,7 @@
       line: '/data *(rw,no_root_squash,sync)'
   - name: Exporting Shares
     shell: "exportfs -avr; showmount -e kawkab"
+    
+      
+  #by hooud kawkab
 
